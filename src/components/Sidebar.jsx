@@ -1,19 +1,23 @@
-// Sidebar.js (refactored with map function)
-import React, { useState } from "react";
-import {
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Collapse,
-} from "@mui/material";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import {SIDEBAR_SECTIONS }from "../constants/sidebarConstants";
+// components/Sidebar.jsx (updated with navigation)
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { 
+  Drawer, 
+  List, 
+  ListItem, 
+  ListItemIcon, 
+  ListItemText, 
+  Collapse 
+} from '@mui/material';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import { SIDEBAR_SECTIONS } from '../constants/sidebarConstants';
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   const [openSections, setOpenSections] = useState({
     operationInfo: false,
     sip: false,
@@ -25,45 +29,107 @@ const Sidebar = () => {
     manipulate: false,
     vpn: false,
     dhcp: false,
-    systemTools: false,
+    systemTools: false
   });
 
   const handleToggle = (section) => {
-    setOpenSections((prev) => ({
+    setOpenSections(prev => ({
       ...prev,
-      [section]: !prev[section],
+      [section]: !prev[section]
     }));
+  };
+
+  const handleNavigation = (path) => {
+    if (path) {
+      navigate(path);
+    }
+  };
+
+  const isActive = (path) => {
+    return location.pathname === path;
   };
 
   const renderSubmenuItems = (submenuItems) => {
     return submenuItems.map((item) => (
-      <ListItem key={item.id} button sx={{ pl: 4 }} className="cursor-pointer">
+      <ListItem 
+        key={item.id}
+        button 
+        sx={{ 
+          pl: 4,
+          backgroundColor: isActive(item.path) ? 'rgba(25, 118, 210, 0.12)' : 'transparent',
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+          }
+        }}
+        className="cursor-pointer"
+        onClick={() => handleNavigation(item.path)}
+      >
         <ListItemIcon>
-          <FiberManualRecordIcon sx={{ fontSize: 8 }} />
+          <FiberManualRecordIcon 
+            sx={{ 
+              fontSize: 8,
+              color: isActive(item.path) ? 'primary.main' : 'inherit'
+            }} 
+          />
         </ListItemIcon>
-        <ListItemText primary={item.title} />
+        <ListItemText 
+          primary={item.title}
+          sx={{
+            '& .MuiTypography-root': {
+              color: isActive(item.path) ? 'primary.main' : 'inherit',
+              fontWeight: isActive(item.path) ? 600 : 400,
+            }
+          }}
+        />
       </ListItem>
     ));
   };
 
   const renderSidebarSection = (section) => {
     const IconComponent = section.icon;
-
+    const isCurrentActive = isActive(section.path) || 
+      (section.submenuItems && section.submenuItems.some(item => isActive(item.path)));
+    
     return (
       <React.Fragment key={section.id}>
-        <ListItem
-          button
-          onClick={() => handleToggle(section.id)}
+        <ListItem 
+          button 
+          onClick={() => {
+            if (section.hasSubmenu) {
+              handleToggle(section.id);
+            } else {
+              handleNavigation(section.path);
+            }
+          }}
+          sx={{
+            backgroundColor: isCurrentActive ? 'rgba(25, 118, 210, 0.12)' : 'transparent',
+            '&:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+            }
+          }}
           className="cursor-pointer"
         >
           <ListItemIcon>
-            <IconComponent />
+            <IconComponent 
+              sx={{ 
+                color: isCurrentActive ? 'primary.main' : 'inherit'
+              }} 
+            />
           </ListItemIcon>
-          <ListItemText primary={section.title} />
-          {section.hasSubmenu &&
-            (openSections[section.id] ? <ExpandLess /> : <ExpandMore />)}
+          <ListItemText 
+            primary={section.title}
+            sx={{
+              '& .MuiTypography-root': {
+                color: isCurrentActive ? 'primary.main' : 'inherit',
+                fontWeight: isCurrentActive ? 600 : 400,
+              }
+            }}
+          />
+          {section.hasSubmenu && (
+            openSections[section.id] ? <ExpandLess /> : <ExpandMore />
+          )}
         </ListItem>
-
+        
         {section.hasSubmenu && (
           <Collapse in={openSections[section.id]} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
@@ -82,16 +148,18 @@ const Sidebar = () => {
       sx={{
         width: 240,
         flexShrink: 0,
-        "& .MuiDrawer-paper": {
+        '& .MuiDrawer-paper': {
           width: 240,
-          boxSizing: "border-box",
-          top: "80px",
-          height: "calc(100% - 80px)",
+          boxSizing: 'border-box',
+          top: '80px',
+          height: 'calc(100% - 80px)',
         },
       }}
     >
       <div role="presentation">
-        <List>{SIDEBAR_SECTIONS.map(renderSidebarSection)}</List>
+        <List>
+          {SIDEBAR_SECTIONS.map(renderSidebarSection)}
+        </List>
       </div>
     </Drawer>
   );
