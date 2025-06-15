@@ -2,8 +2,7 @@
 export const ROUTE_PATHS = {
   HOME: '/',
   
-  // Operation Info routes
-  OPERATION_INFO: '/operation-info',
+
   SYSTEM_INFO: '/operation-info/system-info',
   PSTN_STATUS: '/operation-info/pstn-status',
   PSM_INFO: '/operation-info/psm-info',

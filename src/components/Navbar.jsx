@@ -13,9 +13,9 @@ const Navbar = () => {
   const formattedTime = dateTime.toLocaleTimeString();
 
   return (
-    <div>
+    <div className='fixed w-full'>
       {/* First row: Logo */}
-      <div className='bg-black p-1'>
+      <div className='bg-black p-1 '>
         <img src={LOGO} className='h-8 w-auto' alt="Logo" />
       </div>
 
