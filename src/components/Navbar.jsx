@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import LOGO from "../assets/Clixxo_Logo.png";
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useNavigate } from 'react-router-dom';
 const Navbar = () => {
   const [dateTime, setDateTime] = useState(new Date());
+  const navigate = useNavigate()
+
 
   useEffect(() => {
     const timer = setInterval(() => setDateTime(new Date()), 1000);
@@ -16,7 +19,7 @@ const Navbar = () => {
     <div className='fixed w-full'>
       {/* First row: Logo */}
       <div className='bg-black p-1 '>
-        <img src={LOGO} className='h-8 w-auto' alt="Logo" />
+        <img src={LOGO} className='h-8 w-auto cursor-pointer' alt="Logo"  onClick={() => navigate("/")}/>
       </div>
 
       {/* Second row: Date, Time, User, Logout */}
